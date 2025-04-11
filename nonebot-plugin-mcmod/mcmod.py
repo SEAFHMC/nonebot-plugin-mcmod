@@ -89,6 +89,7 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
             await wiki.finish("获取内容失败")
         else:
             await bot.send_group_forward_msg(group_id=event.group_id, messages=content)
+            await wiki.finish()
     else:
         msgs.append(MessageSegment.node_custom(
             user_id=bot.self_id,
