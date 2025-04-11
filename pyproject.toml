@@ -1,5 +1,5 @@
 [project]
-name = "nonebot_plugin_dingzhen"
+name = "nonebot-plugin-mcmod"
 version = "1.0"
 description = "通过 https://www.mcmod.cn 获取模组、整合包、教程等信息。"
 authors = [
