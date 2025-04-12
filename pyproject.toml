@@ -11,6 +11,8 @@ repository = "https://github.com/chrysoljq/nonebot-plugin-mcmod"
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 nonebot2 = ">=2.0.0-beta.1"
+nonebot-adapter-onebot = ">=2.0.0"
+aiohttp = "*"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=5.2"
