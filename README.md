@@ -1,11 +1,11 @@
-# nonebot-plugin-mcmod
+<h1 align="center"> nonebot-plugin-mcmod </h1>
 
 <p align="center">
   <a href="https://github.com/chrysoljq/nonebot-plugin-mcmod">
     <img src="https://img.shields.io/github/license/chrysoljq/nonebot-plugin-mcmod" alt="LICENSE">
   </a>
-  <a href="https://pypi.python.org/pypi/nonebot-plugin-mcmod">
-    <img src="https://img.shields.io/pypi/v/nonebot-plugin-mcmod" alt="PyPI">
+  <a href="https://pypi.python.org/pypi/nonebot_plugin_mcmod">
+    <img src="https://img.shields.io/pypi/v/nonebot_plugin_mcmod" alt="PyPI">
   </a>
   <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
   <a href="https://github.com/nonebot/nonebot2">
@@ -25,17 +25,22 @@
 ![示例](img/image.png)
 
 ## 💿 安装（暂未上架，请先使用 clone 方式安装）
+**使用 git:**
+```bash
+git clone https://github.com/chrysoljq/nonebot-plugin-mcmod
+```
+然后将 `nonebot-plugin-mcmod/nonebot_plugin_mcmod` 复制到你的插件目录下。
 
 **使用 pip:**
 
 ```bash
-pip install nonebot-plugin-mcmod
-````
+pip install nonebot_plugin_mcmod
+```
 
 **使用 nb-cli:**
 
 ```bash
-nb plugin install nonebot-plugin-mcmod
+nb plugin install nonebot_plugin_mcmod
 ```
 
 安装后，请在你的 `bot.py` 或 `pyproject.toml` 中加载插件：
@@ -73,12 +78,13 @@ plugins = ["nonebot_plugin_mcmod"]
   * `#百科 AE2` - 在所有分类中搜索关键词为“AE2”的内容。
   * `#百科 暮色森林 2` - 查看“暮色森林”搜索结果中的第 2 条详细信息。
 
-## 📝 待办清单 (TODO)
+## 📝 TODO
 
   * [ ] 获取整合包/模组支持的 Minecraft 版本信息。
   * [ ] 完善搜索结果中的图片爬取与展示。
   * [ ] 增加配置项，例如结果数量限制等。
   * [ ] 为对话流程添加超时机制
+  * [ ] 控制消息长度
 
 ## 🙏 致谢
 

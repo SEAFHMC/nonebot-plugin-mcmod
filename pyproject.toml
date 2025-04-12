@@ -1,26 +1,22 @@
-[project]
+[tool.poetry]
 name = "nonebot-plugin-mcmod"
 version = "1.0"
 description = "通过 https://www.mcmod.cn 获取模组、整合包、教程等信息。"
-authors = [
-    { name = "chrysoljq", email = "study@iqach.top" }
-]
+authors = ["chrysoljq <study@iqach.top>"]
 readme = "README.md"
 license = "MIT"
 homepage = "https://github.com/chrysoljq/nonebot-plugin-mcmod"
 repository = "https://github.com/chrysoljq/nonebot-plugin-mcmod"
-requires-python = ">=3.8"
 
-# 主依赖
-dependencies = [
-    "nonebot2 >=2.0.0-beta.1"
-]
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+nonebot2 = ">=2.0.0-beta.1"
 
-# 可选依赖
-[project.optional-dependencies]
-dev = [
-    "pytest>=5.2"
-]
+[tool.poetry.dev-dependencies]
+pytest = ">=5.2"
+
+[tool.poetry.extras]
+dev = ["pytest"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

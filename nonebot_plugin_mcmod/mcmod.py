@@ -13,6 +13,7 @@ cmd_map = {
 }
 mcmod = MCModScraper()
 
+
 async def timeout_task(matcher: Matcher, timeout: float):
     """一个后台任务，在指定时间后检查并处理超时"""
     await asyncio.sleep(timeout)
@@ -34,14 +35,22 @@ async def send_content(url: str, bot: Bot):
             user_id=bot.self_id,
             nickname="百科bot",
             content=MessageSegment.text(content[0]+'\n'+url)
-            ))
+        ))
         for i in content[1]:
             if i.get('type') == 'image':
+                if text:
+                    message.append(MessageSegment.node_custom(
+                        user_id=bot.self_id,
+                        nickname="百科bot",
+                        content=MessageSegment.text(text)
+                    ))
+                    text = ''
                 if i.get('content'):
                     message.append(MessageSegment.node_custom(
                         user_id=bot.self_id,
                         nickname="百科bot",
-                        content=[MessageSegment.image(i.get('url')), MessageSegment.text(i.get('content'))]
+                        content=[MessageSegment.image(
+                            i.get('url')), MessageSegment.text(i.get('content'))]
                     ))
                 else:
                     message.append(MessageSegment.node_custom(
@@ -80,10 +89,14 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
         await wiki.finish("未找到相关内容")
 
     msgs = []
-    if len(cmdArgs) > 2 and cmdArgs[2].isdigit():
-        if int(cmdArgs[2]) > len(result) or int(cmdArgs[2]) < 1:
-            await wiki.finish("请输入正确的序号")
-        link = result[int(cmdArgs[2]) - 1]['link']
+    if len(result) == 1 or (len(cmdArgs) > 2 and cmdArgs[2].isdigit()):
+        if len(cmdArgs) > 2:
+            if (int(cmdArgs[2]) > len(result) or int(cmdArgs[2]) < 1):
+                await wiki.finish("请输入正确的序号")
+            link = result[int(cmdArgs[2]) - 1]['link']
+        else:
+            link = result[0]['link']
+            
         content = await send_content(link, bot)
         if not content:
             await wiki.finish("获取内容失败")
