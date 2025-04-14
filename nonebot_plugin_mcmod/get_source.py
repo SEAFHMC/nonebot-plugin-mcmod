@@ -2,6 +2,7 @@ import re
 import aiohttp
 import asyncio
 import urllib.parse
+from nonebot.log import logger
 from bs4 import NavigableString, BeautifulSoup
 
 
@@ -25,7 +26,7 @@ class MCModScraper:
 
     async def get_html(self, url: str):
         if not url:
-            print("错误：搜索查询不能为空。")
+            logger.error("错误：搜索查询不能为空。")
             return None
 
         async with aiohttp.ClientSession(headers=self.headers) as session:
@@ -34,12 +35,12 @@ class MCModScraper:
                     response.raise_for_status()
                     return await response.text()
             except asyncio.TimeoutError:
-                print(f"错误：请求超时 ({url})")
+                logger.error(f"错误：请求超时 ({url})")
             except aiohttp.ClientError as e:
-                print(f"错误：请求失败 ({url}) - {e}")
+                logger.error(f"错误：请求失败 ({url}) - {e}")
         return None
 
-    async def search_mcmod(self, query: str, filter: int = 0):
+    async def search_mcmod(self, query: str, filter: int = 0, mold: int = 0):
         """
         在 MC百科 (search.mcmod.cn) 上搜索指定查询，并返回结果列表。
 
@@ -50,9 +51,9 @@ class MCModScraper:
             list: 包含搜索结果字典的列表，每个字典包含 'title', 'description', 'link'。
                   如果出错或找不到结果，则返回空列表或 None。
         """
-        print(f"正在搜索：{query} {filter}")
+        logger.info(f"正在搜索：{query}, 类别：{filter}")
         encoded_query = urllib.parse.quote(query)
-        search_url = f"https://search.mcmod.cn/s?key={encoded_query}&filter={filter}&mold="
+        search_url = f"https://search.mcmod.cn/s?key={encoded_query}&filter={filter}&mold={mold}"
         html = await self.get_html(search_url)
         if not html:
             return None
@@ -86,13 +87,12 @@ class MCModScraper:
                     'description': description,
                     'link': link
                 })
-        print(len(extracted_results))
+        # print(len(extracted_results))
         return extracted_results
 
     async def get_item(self, url: str):
         html = await self.get_html(url)
         if not html:
-            print('error')
             return
 
         soup = BeautifulSoup(html, 'html.parser')
@@ -110,7 +110,6 @@ class MCModScraper:
         """教程"""
         html = await self.get_html(url)
         if not html:
-            print('error')
             return
 
         soup = BeautifulSoup(html, 'html.parser')
@@ -127,15 +126,23 @@ class MCModScraper:
     async def get_profile(self, url: str):
         html = await self.get_html(url)
         if not html:
-            print('error')
             return None
 
         soup = BeautifulSoup(html, 'html.parser')
-        title = soup.find('div', class_='class-title').get_text(strip=True)
+        # 标题
+        title_div = soup.find('div', class_='class-title')
+        title = title_div.h3.text + '\n' + title_div.h4.text
+        # mc 版本
+        mcver_li = soup.find('li', class_='mcver').ul
+        mcver = ''
+        for ul in mcver_li.children:
+            mcver += ('\n' if mcver else '') + ul.get_text(separator=' ')
+        # 正文
         content_html = soup.select_one('li.text-area.common-text')
 
         content_list = self.__parse_content(content_html)
-        return title, content_list
+        logger.info(f"mcver: {mcver}")
+        return title, content_list, mcver
 
     def __parse_content(self, html: BeautifulSoup):
         """解析正文内容，返回一个列表，包含图片、标题和文本。"""
@@ -150,18 +157,18 @@ class MCModScraper:
                 if figure and figure.find('img'):
                     img_tag = figure.find('img')
                     img_url = img_tag.get('data-src') or img_tag.get(
-                        'data-src')  # Get src or data-src
+                        'src')  # Get src or data-src
 
-                    caption_tag = figure.find('span', class_='figcaption')
-                    comment = caption_tag.get_text(
-                        strip=True) if caption_tag else None
+                    # caption_tag = figure.find('span', class_='figcaption')
+                    comment = tag.get_text(
+                        strip=True) # if caption_tag else None
                     
                     if img_url.startswith('//'):
                         img_url = 'https:' + img_url
 
                     item = {"type": "image", "url": img_url}
                     if comment:
-                        item["comment"] = comment
+                        item["content"] = comment
                     parsed_data.append(item)
 
                 # Case 2: Paragraph contains a title
@@ -192,7 +199,7 @@ if __name__ == "__main__":
     async def main():
         scraper = MCModScraper()
         # 示例：获取模组包简介
-        result = await scraper.get_post("https://www.mcmod.cn/post/3312.html")
+        result = await scraper.get_content("https://www.mcmod.cn/class/1437.html")
         print(result)
 
     asyncio.run(main())

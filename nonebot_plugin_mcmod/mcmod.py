@@ -29,13 +29,19 @@ async def send_content(url: str, bot: Bot):
     content = await mcmod.get_content(url)
     message = []
     text = ''
-    print(content)
+    # print(content)
     if content:
         message.append(MessageSegment.node_custom(
             user_id=bot.self_id,
             nickname="百科bot",
             content=MessageSegment.text(content[0]+'\n'+url)
         ))
+        if len(content) == 3:
+            message.append(MessageSegment.node_custom(
+                user_id=bot.self_id,
+                nickname="百科bot",
+                content=MessageSegment.text("支持的MC版本\n"+content[2])
+            ))
         for i in content[1]:
             if i.get('type') == 'image':
                 if text:
@@ -68,11 +74,12 @@ async def send_content(url: str, bot: Bot):
                         content=MessageSegment.text(text)
                     ))
                 text = i.get('content')
-        message.append(MessageSegment.node_custom(
-            user_id=bot.self_id,
-            nickname="百科bot",
-            content=MessageSegment.text(text)
-        ))
+        if text:
+            message.append(MessageSegment.node_custom(
+                user_id=bot.self_id,
+                nickname="百科bot",
+                content=MessageSegment.text(text)
+            ))
         return message
     else:
         return None
@@ -80,23 +87,31 @@ async def send_content(url: str, bot: Bot):
 
 @wiki.handle()
 async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
-    cmdArgs = event.get_plaintext().split(' ')
-    if len(cmdArgs) < 2:
+    cmdArgs = event.get_plaintext().split()
+    if len(cmdArgs) > 2 and cmdArgs[-1].isdigit():
+        # 如果最后一个参数是数字，则将其视为序号
+        query = ' '.join(cmdArgs[1:-1])
+        seq = int(cmdArgs[-1])
+    elif len(cmdArgs) == 2:
+        query = cmdArgs[1]
+        seq = None
+    else:
         await wiki.finish("请输入要查询的内容")
 
-    result = await mcmod.search_mcmod(cmdArgs[1], cmd_map.get(cmdArgs[0]))
+    result = await mcmod.search_mcmod(query, cmd_map.get(cmdArgs[0]))
     if not result:
         await wiki.finish("未找到相关内容")
 
     msgs = []
-    if len(result) == 1 or (len(cmdArgs) > 2 and cmdArgs[2].isdigit()):
-        if len(cmdArgs) > 2:
-            if (int(cmdArgs[2]) > len(result) or int(cmdArgs[2]) < 1):
+    # print(cmdArgs)
+    if len(result) == 1 or (seq is not None):
+        if seq is not None:
+            if (seq > len(result) or seq < 1):
                 await wiki.finish("请输入正确的序号")
-            link = result[int(cmdArgs[2]) - 1]['link']
+            link = result[seq - 1]['link']
         else:
             link = result[0]['link']
-            
+
         content = await send_content(link, bot)
         if not content:
             await wiki.finish("获取内容失败")
