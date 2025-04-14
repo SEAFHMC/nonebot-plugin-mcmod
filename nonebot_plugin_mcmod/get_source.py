@@ -131,7 +131,9 @@ class MCModScraper:
         soup = BeautifulSoup(html, 'html.parser')
         # 标题
         title_div = soup.find('div', class_='class-title')
-        title = title_div.h3.text + '\n' + title_div.h4.text
+        title = title_div.h3.get_text()
+        if title_div.h4:
+            title += '\n' + title_div.h4.get_text()
         # mc 版本
         mcver_li = soup.find('li', class_='mcver').ul
         mcver = ''
