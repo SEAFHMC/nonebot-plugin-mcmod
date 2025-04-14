@@ -27,7 +27,7 @@ jobs:
           pip install poetry
 
       - name: Install dependencies
-        run: poetry install --no-dev
+        run: poetry install --no-interaction
 
       - name: Build package
         run: poetry build
