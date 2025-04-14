@@ -93,7 +93,7 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
         query = ' '.join(cmdArgs[1:-1])
         seq = int(cmdArgs[-1])
     elif len(cmdArgs) == 2:
-        query = cmdArgs[1]
+        query = ' '.join(cmdArgs[1:])
         seq = None
     else:
         await wiki.finish("请输入要查询的内容")
