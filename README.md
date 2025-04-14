@@ -90,7 +90,7 @@ plugins = ["nonebot_plugin_mcmod"]
 ## 🙏 致谢
 
   * [mcmod.cn](https://www.mcmod.cn/) - 提供数据来源。
-  * [NoneBot](https://github.com/nonebot/nonebot) - 插件开发框架。
+  * [nonebot2](https://github.com/nonebot/nonebot2) - 插件开发框架。
   * [Gemini](https://gemini.google.com/app) - 代码助手，大大加快开发流程。
   * [limbang/mirai-console-mcmod-plugin](https://github.com/limbang/mirai-console-mcmod-plugin) - 提供灵感来源。
 
