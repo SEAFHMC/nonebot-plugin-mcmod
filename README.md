@@ -7,9 +7,9 @@
   <a href="https://pypi.python.org/pypi/nonebot_plugin_mcmod">
     <img src="https://img.shields.io/pypi/v/nonebot_plugin_mcmod" alt="PyPI">
   </a>
-  <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python">
   <a href="https://github.com/nonebot/nonebot2">
-    <img src="https://img.shields.io/badge/nonebot2-2.0.0+-red" alt="NoneBot">
+    <img src="https://img.shields.io/badge/nonebot2-2.3.0+-red" alt="NoneBot">
   </a>
 </p>
 
