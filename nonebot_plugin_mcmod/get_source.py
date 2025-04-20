@@ -151,31 +151,29 @@ class MCModScraper:
         parsed_data = []
         for tag in html.children:
             if tag.name in ('p', 'div', 'pre'):
-                figure = tag.find('span', class_='figure')
                 title_span = tag.find('span', class_='common-text-title')
                 content_text = tag.get_text(strip=True)
-
                 # 图片
+                figure = tag.find('span', class_='figure')
+
                 if figure and figure.find('img'):
                     img_tag = figure.find('img')
                     img_url = img_tag.get('data-src') or img_tag.get(
                         'src')  # Get src or data-src
-
                     # caption_tag = figure.find('span', class_='figcaption')
-                    comment = tag.get_text(
-                        strip=True) # if caption_tag else None
-                    
+
                     if img_url.startswith('//'):
                         img_url = 'https:' + img_url
-
+                    if "mcmod.cn" not in img_url:
+                        img_url = "https://www.mcmod.cn/images/loadfail.gif"
                     item = {"type": "image", "url": img_url}
-                    if comment:
-                        item["content"] = comment
+                    if content_text:
+                        item["content"] = content_text
                     parsed_data.append(item)
 
                 # Case 2: Paragraph contains a title
                 elif title_span or tag.get('style') == 'text-indent: 0em;':
-                    title_text = tag.get_text(strip=True)
+                    # title_text = tag.get_text(strip=True)
                     item = {
                         "type": "title",
                         "content": content_text
@@ -201,7 +199,7 @@ if __name__ == "__main__":
     async def main():
         scraper = MCModScraper()
         # 示例：获取模组包简介
-        result = await scraper.get_content("https://www.mcmod.cn/class/1437.html")
+        result = await scraper.get_content("https://www.mcmod.cn/class/2230.html")
         print(result)
 
     asyncio.run(main())

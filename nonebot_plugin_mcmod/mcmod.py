@@ -92,12 +92,13 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
         # 如果最后一个参数是数字，则将其视为序号
         query = ' '.join(cmdArgs[1:-1])
         seq = int(cmdArgs[-1])
-    elif len(cmdArgs) == 2:
+    elif len(cmdArgs) >= 2:
         query = ' '.join(cmdArgs[1:])
         seq = None
     else:
         await wiki.finish("请输入要查询的内容")
 
+    # @todo: 如果没找到相关内容，可以切换复杂搜索
     result = await mcmod.search_mcmod(query, cmd_map.get(cmdArgs[0]))
     if not result:
         await wiki.finish("未找到相关内容")
@@ -105,16 +106,16 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
     msgs = []
     # print(cmdArgs)
     if len(result) == 1 or (seq is not None):
-        if seq is not None:
+        if len(result) == 1:
+            link = result[0]['link']
+        else:
             if (seq > len(result) or seq < 1):
                 await wiki.finish("请输入正确的序号")
             link = result[seq - 1]['link']
-        else:
-            link = result[0]['link']
 
         content = await send_content(link, bot)
         if not content:
-            await wiki.finish("获取内容失败")
+            await wiki.finish("获取内容失败, 请稍后再试")
         else:
             await bot.send_group_forward_msg(group_id=event.group_id, messages=content)
             await wiki.finish()
@@ -151,5 +152,8 @@ async def _(state: T_State, event: GroupMessageEvent, bot: Bot):
                 await wiki.finish("获取内容失败")
         else:
             await wiki.finish("无效的序号或搜索结果已过期")
+    elif msg.startswith("#百科"):
+        await wiki_search(bot, event, state)
+        await wiki.reject()
     else:
         await wiki.finish("请输入有效的序号")
