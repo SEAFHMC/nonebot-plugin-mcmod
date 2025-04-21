@@ -25,7 +25,7 @@
 
 ![示例](img/image.png)
 
-## 💿 安装（暂未上架，请先使用 clone 方式安装）
+## 💿 安装
 **使用 git:**
 ```bash
 git clone https://github.com/chrysoljq/nonebot-plugin-mcmod
