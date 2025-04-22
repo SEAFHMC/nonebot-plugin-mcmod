@@ -150,26 +150,27 @@ class MCModScraper:
         """解析正文内容，返回一个列表，包含图片、标题和文本。"""
         parsed_data = []
         for tag in html.children:
-            if tag.name in ('p', 'div', 'pre'):
+            if tag.name in ('p', 'div', 'pre', 'table'):
                 title_span = tag.find('span', class_='common-text-title')
                 content_text = tag.get_text(strip=True)
                 # 图片
-                figure = tag.find('span', class_='figure')
+                figures = tag.find_all('span', class_='figure')
 
-                if figure and figure.find('img'):
-                    img_tag = figure.find('img')
-                    img_url = img_tag.get('data-src') or img_tag.get(
-                        'src')  # Get src or data-src
-                    # caption_tag = figure.find('span', class_='figcaption')
+                if figures:
+                    for figure in figures:
+                        img_tag = figure.find('img')
+                        img_url = img_tag.get('data-src') or img_tag.get(
+                            'src')  # Get src or data-src
+                        # caption_tag = figure.find('span', class_='figcaption')
 
-                    if img_url.startswith('//'):
-                        img_url = 'https:' + img_url
-                    if "mcmod.cn" not in img_url:
-                        img_url = "https://www.mcmod.cn/images/loadfail.gif"
-                    item = {"type": "image", "url": img_url}
-                    if content_text:
-                        item["content"] = content_text
-                    parsed_data.append(item)
+                        if img_url.startswith('//'):
+                            img_url = 'https:' + img_url
+                        if "mcmod.cn" not in img_url:
+                            img_url = "https://www.mcmod.cn/images/loadfail.gif"
+                        item = {"type": "image", "url": img_url}
+                        if img_comment := figure.get_text(strip=True):
+                            item["content"] = img_comment
+                        parsed_data.append(item)
 
                 # Case 2: Paragraph contains a title
                 elif title_span or tag.get('style') == 'text-indent: 0em;':
@@ -199,7 +200,7 @@ if __name__ == "__main__":
     async def main():
         scraper = MCModScraper()
         # 示例：获取模组包简介
-        result = await scraper.get_content("https://www.mcmod.cn/class/2230.html")
+        result = await scraper.get_content("https://www.mcmod.cn/class/6453.html")
         print(result)
 
     asyncio.run(main())
