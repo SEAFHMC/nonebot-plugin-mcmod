@@ -1,12 +1,15 @@
 import asyncio
+from nonebot import get_plugin_config
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.plugin import on_startswith
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent, Bot
 
+from .config import Config
 from .get_source import MCModScraper
 
+plugin_config = get_plugin_config(Config)
 wiki = on_startswith(("#百科", "#百科模组", "#百科整合包", "#百科资料", "#百科教程"))
 cmd_map = {
     "#百科": 0, "#百科模组": 1, "#百科整合包": 2, "#百科资料": 3, "#百科教程": 4
@@ -130,7 +133,7 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
                 user_id=bot.self_id,
                 nickname=str(i+1),
                 content=MessageSegment.text(
-                    f'{result[i]["title"]}\n{result[i]["link"]}'
+                    f'{str(i+1)+'. ' if plugin_config.mcmod_search_seq else None}{result[i]["title"]}\n{result[i]["link"]}'
                 )
                 # {result[i]['description']+'\n' if result[i]['description'] else ''}
             ))
