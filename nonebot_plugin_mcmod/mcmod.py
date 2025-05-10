@@ -133,7 +133,7 @@ async def wiki_search(bot: Bot, event: GroupMessageEvent, state: T_State):
                 user_id=bot.self_id,
                 nickname=str(i+1),
                 content=MessageSegment.text(
-                    f'{str(i+1)+'. ' if plugin_config.mcmod_search_seq else None}{result[i]["title"]}\n{result[i]["link"]}'
+                    f"{str(i+1)+'. ' if plugin_config.mcmod_search_seq else None}{result[i]["title"]}\n{result[i]["link"]}"
                 )
                 # {result[i]['description']+'\n' if result[i]['description'] else ''}
             ))
